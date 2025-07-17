@@ -14,10 +14,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  final _confirmPasswordController = TextEditingController();
 
   bool _obscurePassword = true;
-  bool _obscureConfirmPassword = true;
   bool _acceptTerms = false;
 
   @override
@@ -25,7 +23,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
     _nameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
-    _confirmPasswordController.dispose();
     super.dispose();
   }
 
@@ -135,7 +132,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         TextFormField(
           controller: _passwordController,
           obscureText: _obscurePassword,
-          textInputAction: TextInputAction.next,
+          textInputAction: TextInputAction.done,
           decoration: InputDecoration(
             labelText: 'Password',
             prefixIcon: const Icon(Icons.lock_outline),
@@ -156,35 +153,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
             }
             if (value.length < 8) {
               return 'Password must be at least 8 characters';
-            }
-            return null;
-          },
-        ),
-        const SizedBox(height: 16),
-        TextFormField(
-          controller: _confirmPasswordController,
-          obscureText: _obscureConfirmPassword,
-          textInputAction: TextInputAction.done,
-          decoration: InputDecoration(
-            labelText: 'Confirm Password',
-            prefixIcon: const Icon(Icons.lock_outline),
-            suffixIcon: IconButton(
-              icon: Icon(
-                _obscureConfirmPassword ? Icons.visibility : Icons.visibility_off,
-              ),
-              onPressed: () {
-                setState(() {
-                  _obscureConfirmPassword = !_obscureConfirmPassword;
-                });
-              },
-            ),
-          ),
-          validator: (value) {
-            if (value == null || value.isEmpty) {
-              return 'Please confirm your password';
-            }
-            if (value != _passwordController.text) {
-              return 'Passwords do not match';
             }
             return null;
           },
@@ -220,7 +188,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
                   debugPrint('Is form valid? $isValid');
                   debugPrint('Password: ${_passwordController.text}');
-                  debugPrint('Confirm: ${_confirmPasswordController.text}');
 
                   if (isValid) {
                     final success = await authProvider.register(
