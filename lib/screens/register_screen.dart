@@ -10,10 +10,12 @@ class RegisterScreen extends StatefulWidget {
 
 class _RegisterScreenState extends State<RegisterScreen> {
   final _formKey = GlobalKey<FormState>();
+
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
+
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
   bool _acceptTerms = false;
@@ -30,29 +32,24 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final size = MediaQuery.of(context).size;
 
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: EdgeInsets.all(24.0),
-          child: ConstrainedBox(
-            constraints: BoxConstraints(
-              minHeight: size.height - MediaQuery.of(context).padding.top - 48,
-            ),
+          padding: const EdgeInsets.all(24.0),
+          child: Form(
+            key: _formKey,
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 _buildHeader(theme),
-                SizedBox(height: 32),
-                _buildRegisterForm(),
-                SizedBox(height: 24),
+                const SizedBox(height: 32),
+                _buildFields(),
+                const SizedBox(height: 24),
                 _buildRegisterButton(),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
                 _buildLoginLink(),
-                SizedBox(height: 20),
               ],
             ),
           ),
@@ -77,15 +74,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
             color: theme.colorScheme.primary,
           ),
         ),
-        SizedBox(height: 24),
+        const SizedBox(height: 24),
         Text(
           'Create Account',
           style: theme.textTheme.headlineMedium?.copyWith(
             fontWeight: FontWeight.bold,
-            color: theme.colorScheme.onSurface,
           ),
         ),
-        SizedBox(height: 8),
+        const SizedBox(height: 8),
         Text(
           'Sign up to get started',
           style: theme.textTheme.bodyLarge?.copyWith(
@@ -96,227 +92,154 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
   }
 
-  Widget _buildRegisterForm() {
-    return Form(
-      key: _formKey,
-      child: Column(
-        children: [
-          TextFormField(
-            controller: _nameController,
-            textInputAction: TextInputAction.next,
-            textCapitalization: TextCapitalization.words,
-            decoration: InputDecoration(
-              labelText: 'Full Name',
-              prefixIcon: Icon(Icons.person_outlined),
-              hintText: 'Enter your full name',
-            ),
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Please enter your name';
-              }
-              if (value.length < 2) {
-                return 'Name must be at least 2 characters';
-              }
-              if (!RegExp(r'^[a-zA-Z\s]+$').hasMatch(value)) {
-                return 'Name can only contain letters and spaces';
-              }
-              return null;
-            },
+  Widget _buildFields() {
+    return Column(
+      children: [
+        TextFormField(
+          controller: _nameController,
+          textInputAction: TextInputAction.next,
+          decoration: const InputDecoration(
+            labelText: 'Full Name',
+            prefixIcon: Icon(Icons.person_outline),
           ),
-          SizedBox(height: 16),
-          TextFormField(
-            controller: _emailController,
-            keyboardType: TextInputType.emailAddress,
-            textInputAction: TextInputAction.next,
-            decoration: InputDecoration(
-              labelText: 'Email',
-              prefixIcon: Icon(Icons.email_outlined),
-              hintText: 'Enter your email',
-            ),
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Please enter your email';
-              }
-              if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
-                return 'Please enter a valid email';
-              }
-              return null;
-            },
+          validator: (value) {
+            if (value == null || value.trim().isEmpty) {
+              return 'Please enter your name';
+            }
+            if (value.length < 2) {
+              return 'Name must be at least 2 characters';
+            }
+            return null;
+          },
+        ),
+        const SizedBox(height: 16),
+        TextFormField(
+          controller: _emailController,
+          textInputAction: TextInputAction.next,
+          keyboardType: TextInputType.emailAddress,
+          decoration: const InputDecoration(
+            labelText: 'Email',
+            prefixIcon: Icon(Icons.email_outlined),
           ),
-          SizedBox(height: 16),
-          TextFormField(
-            controller: _passwordController,
-            obscureText: _obscurePassword,
-            textInputAction: TextInputAction.next,
-            decoration: InputDecoration(
-              labelText: 'Password',
-              prefixIcon: Icon(Icons.lock_outlined),
-              suffixIcon: IconButton(
-                icon: Icon(_obscurePassword ? Icons.visibility : Icons.visibility_off),
-                onPressed: () {
-                  setState(() {
-                    _obscurePassword = !_obscurePassword;
-                  });
-                },
+          validator: (value) {
+            if (value == null || value.trim().isEmpty) {
+              return 'Please enter your email';
+            }
+            if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
+              return 'Enter a valid email';
+            }
+            return null;
+          },
+        ),
+        const SizedBox(height: 16),
+        TextFormField(
+          controller: _passwordController,
+          obscureText: _obscurePassword,
+          textInputAction: TextInputAction.next,
+          decoration: InputDecoration(
+            labelText: 'Password',
+            prefixIcon: const Icon(Icons.lock_outline),
+            suffixIcon: IconButton(
+              icon: Icon(
+                _obscurePassword ? Icons.visibility : Icons.visibility_off,
               ),
-              hintText: 'Enter your password',
+              onPressed: () {
+                setState(() {
+                  _obscurePassword = !_obscurePassword;
+                });
+              },
             ),
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Please enter your password';
-              }
-              if (value.length < 8) {
-                return 'Password must be at least 8 characters';
-              }
-              if (!RegExp(r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]').hasMatch(value)) {
-                return 'Password must contain uppercase, lowercase, number, and special character';
-              }
-              return null;
-            },
           ),
-          SizedBox(height: 16),
-          TextFormField(
-            controller: _confirmPasswordController,
-            obscureText: _obscureConfirmPassword,
-            textInputAction: TextInputAction.done,
-            decoration: InputDecoration(
-              labelText: 'Confirm Password',
-              prefixIcon: Icon(Icons.lock_outlined),
-              suffixIcon: IconButton(
-                icon: Icon(_obscureConfirmPassword ? Icons.visibility : Icons.visibility_off),
-                onPressed: () {
-                  setState(() {
-                    _obscureConfirmPassword = !_obscureConfirmPassword;
-                  });
-                },
+          validator: (value) {
+            if (value == null || value.isEmpty) {
+              return 'Please enter a password';
+            }
+            if (value.length < 8) {
+              return 'Password must be at least 8 characters';
+            }
+            return null;
+          },
+        ),
+        const SizedBox(height: 16),
+        TextFormField(
+          controller: _confirmPasswordController,
+          obscureText: _obscureConfirmPassword,
+          textInputAction: TextInputAction.done,
+          decoration: InputDecoration(
+            labelText: 'Confirm Password',
+            prefixIcon: const Icon(Icons.lock_outline),
+            suffixIcon: IconButton(
+              icon: Icon(
+                _obscureConfirmPassword ? Icons.visibility : Icons.visibility_off,
               ),
-              hintText: 'Confirm your password',
+              onPressed: () {
+                setState(() {
+                  _obscureConfirmPassword = !_obscureConfirmPassword;
+                });
+              },
             ),
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Please confirm your password';
-              }
-              if (value != _passwordController.text) {
-                return 'Passwords do not match';
-              }
-              return null;
-            },
-            onFieldSubmitted: (_) => _register(),
           ),
-          SizedBox(height: 16),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Checkbox(
-                value: _acceptTerms,
-                onChanged: (value) {
-                  setState(() {
-                    _acceptTerms = value ?? false;
-                  });
-                },
-              ),
-              Expanded(
-                child: GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      _acceptTerms = !_acceptTerms;
-                    });
-                  },
-                  child: Padding(
-                    padding: EdgeInsets.only(top: 12),
-                    child: RichText(
-                      text: TextSpan(
-                        style: Theme.of(context).textTheme.bodyMedium,
-                        children: [
-                          TextSpan(text: 'I agree to the '),
-                          TextSpan(
-                            text: 'Terms of Service',
-                            style: TextStyle(
-                              color: Theme.of(context).colorScheme.primary,
-                              decoration: TextDecoration.underline,
-                            ),
-                          ),
-                          TextSpan(text: ' and '),
-                          TextSpan(
-                            text: 'Privacy Policy',
-                            style: TextStyle(
-                              color: Theme.of(context).colorScheme.primary,
-                              decoration: TextDecoration.underline,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
+          validator: (value) {
+            if (value == null || value.isEmpty) {
+              return 'Please confirm your password';
+            }
+            if (value != _passwordController.text) {
+              return 'Passwords do not match';
+            }
+            return null;
+          },
+        ),
+        const SizedBox(height: 16),
+        Row(
+          children: [
+            Checkbox(
+              value: _acceptTerms,
+              onChanged: (val) {
+                setState(() {
+                  _acceptTerms = val ?? false;
+                });
+              },
+            ),
+            const Text('I accept the Terms & Privacy Policy'),
+          ],
+        ),
+      ],
     );
   }
 
   Widget _buildRegisterButton() {
     return Consumer<AuthProvider>(
       builder: (context, authProvider, child) {
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            if (authProvider.error != null)
-              Container(
-                padding: EdgeInsets.all(12),
-                margin: EdgeInsets.only(bottom: 16),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.errorContainer,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.error_outline,
-                      color: Theme.of(context).colorScheme.error,
-                      size: 20,
-                    ),
-                    SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        authProvider.error!,
-                        style: TextStyle(
-                          color: Theme.of(context).colorScheme.error,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ElevatedButton(
-              onPressed: (authProvider.isLoading || !_acceptTerms) ? null : _register,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Theme.of(context).colorScheme.primary,
-                foregroundColor: Theme.of(context).colorScheme.onPrimary,
-                padding: EdgeInsets.symmetric(vertical: 16),
-              ),
-              child: authProvider.isLoading
-                  ? SizedBox(
-                      height: 20,
-                      width: 20,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        valueColor: AlwaysStoppedAnimation<Color>(
-                          Theme.of(context).colorScheme.onPrimary,
-                        ),
-                      ),
-                    )
-                  : Text(
-                      'Create Account',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-            ),
-          ],
+        return ElevatedButton(
+          onPressed: (authProvider.isLoading || !_acceptTerms)
+              ? null
+              : () async {
+                  FocusScope.of(context).unfocus();
+
+                  final isValid = _formKey.currentState?.validate() ?? false;
+
+                  debugPrint('Is form valid? $isValid');
+                  debugPrint('Password: ${_passwordController.text}');
+                  debugPrint('Confirm: ${_confirmPasswordController.text}');
+
+                  if (isValid) {
+                    final success = await authProvider.register(
+                      _nameController.text.trim(),
+                      _emailController.text.trim(),
+                      _passwordController.text,
+                    );
+                    if (success) {
+                      context.go('/home');
+                    }
+                  }
+                },
+          child: authProvider.isLoading
+              ? const SizedBox(
+                  height: 20,
+                  width: 20,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                )
+              : const Text('Register'),
         );
       },
     );
@@ -326,38 +249,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Text(
-          'Already have an account? ',
-          style: TextStyle(
-            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
-          ),
-        ),
+        const Text('Already have an account?'),
         TextButton(
           onPressed: () => context.go('/login'),
-          child: Text(
-            'Sign In',
-            style: TextStyle(
-              fontWeight: FontWeight.w600,
-            ),
-          ),
+          child: const Text('Sign In'),
         ),
       ],
     );
-  }
-
-  Future<void> _register() async {
-    if (_formKey.currentState!.validate() && _acceptTerms) {
-      final authProvider = Provider.of<AuthProvider>(context, listen: false);
-      
-      final success = await authProvider.register(
-        _nameController.text.trim(),
-        _emailController.text.trim(),
-        _passwordController.text,
-      );
-
-      if (success) {
-        context.go('/home');
-      }
-    }
   }
 }
