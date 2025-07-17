@@ -64,25 +64,35 @@ class HomePage extends StatelessWidget {
       body: FutureBuilder<Map<String, dynamic>>(
         future: fetchBatches(),
         builder: (context, snapshot) {
-          if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
-          final batches = snapshot.data!['batches'] as Map<String, dynamic>;
-          return ListView(
-            padding: const EdgeInsets.all(16),
-            children: batches.entries.map((e) {
-              final id = e.key;
-              final name = e.value['name'];
-              final file = e.value['file'];
-              return Card(
-                child: ListTile(
-                  title: Text(name),
-                  trailing: const Icon(Icons.arrow_forward_ios),
-                  onTap: () => context.go('/batch/$id?file=$file&name=$name'),
-                ),
-              );
-            }).toList(),
-          );
-        },
-      ),
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(
+              child: Text('Error: ${snapshot.error}'),
+            );
+          } else if (!snapshot.hasData) {
+            return const Center(child: Text('No data found.'));
+          } else {
+            final batches = snapshot.data!['batches'] as Map<String, dynamic>;
+            return ListView(
+              padding: const EdgeInsets.all(16),
+              children: batches.entries.map((e) {
+                final id = e.key;
+                final name = e.value['name'];
+                final file = e.value['file'];
+                return Card(
+                  child: ListTile(
+                    title: Text(name),
+                    trailing: const Icon(Icons.arrow_forward_ios),
+                    onTap: () => context.go('/batch/$id?file=$file&name=$name'),
+                  ),
+                );
+              }).toList(),
+      );
+    }
+  },
+)
+
     );
   }
 }
