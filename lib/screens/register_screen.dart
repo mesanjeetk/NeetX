@@ -181,7 +181,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             textInputAction: TextInputAction.done,
             decoration: InputDecoration(
               labelText: 'Confirm Password',
-              prefixIcon: Icon(Icons.lock_outline_outlined),
+              prefixIcon: Icon(Icons.lock_outlined),
               suffixIcon: IconButton(
                 icon: Icon(_obscureConfirmPassword ? Icons.visibility : Icons.visibility_off),
                 onPressed: () {
