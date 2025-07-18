@@ -69,7 +69,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   _showFilterDialog();
                   break;
                 case 'profile':
-                  context.go('/profile');
+                  context.push('/profile');
                   break;
                 case 'logout':
                   _showLogoutDialog();
@@ -295,7 +295,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     return Card(
       margin: EdgeInsets.only(bottom: 12),
       child: InkWell(
-        onTap: () => context.go('/todo/${todo['_id']}'),
+        onTap: () => context.push('/todo/${todo['_id']}'),
         borderRadius: BorderRadius.circular(12),
         child: Padding(
           padding: EdgeInsets.all(16),
